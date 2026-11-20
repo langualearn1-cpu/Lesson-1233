@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدرس التفاعلي للقواعد - Grammar</title>
+    <!-- تحميل مكتبة Tailwind CSS للتصميم العصري المتجاوب -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تحميل خطوط عربية وإنجليزية واضحة ومناسبة للأطفال -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        }
+        .en-text {
+            font-family: 'Fredoka', 'Inter', sans-serif;
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+        /* تأثيرات الموجات الصوتية عند تحدث المعلمة */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.85); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 0.3; }
+            100% { transform: scale(0.85); opacity: 0.8; }
+        }
+        .speaking-ring {
+            animation: pulse-ring 1.5s infinite ease-in-out;
+        }
+        .audio-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .audio-btn:hover {
+            transform: scale(1.08);
+        }
+        .audio-btn:active {
+            transform: scale(0.95);
+        }
+        /* تنسيقات تفاعلية للكلمات في التمرين الثاني */
+        .word-chip {
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+        .word-chip:hover {
+            background-color: #f1f5f9;
+        }
+        .marked-underline {
+            border-bottom: 3px solid #10b981;
+            background-color: #d1fae5;
+            color: #065f46;
+            font-weight: 700;
+        }
+        .marked-circle {
+            border: 2.5px solid #3b82f6;
+            border-radius: 9999px;
+            background-color: #dbeafe;
+            color: #1e40af;
+            font-weight: 700;
+            padding: 1px 8px;
+        }
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        /* تظليل الجملة النشطة أثناء قراءة المعلمة */
+        .active-reading-box {
+            background-color: #fef9c3 !important;
+            border-color: #f59e0b !important;
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.28), 0 10px 15px -3px rgba(245, 158, 11, 0.15) !important;
+            transform: scale(1.015);
+            transition: all 0.25s ease;
+        }
+        .active-reading-text {
+            background: linear-gradient(120deg, #fde047 0%, #fef08a 100%);
+            padding: 2px 6px;
+            border-radius: 8px;
+            color: #78350f !important;
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+            transition: all 0.25s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 pb-16">
+
+    <!-- شريط علوي ثابت يوضح حالة المعلمة الصوتية -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-pink-100">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <!-- عنوان الدرس -->
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-5 py-1.5 rounded-full font-bold text-xl shadow-md flex items-center gap-2">
+                    <span class="en-text">Grammar</span>
+                    <i class="fa-solid fa-star text-yellow-300 text-sm"></i>
+                </div>
+                <span class="hidden sm:inline-block text-sm font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                    الصفحة 24 • المضارع البسيط والمستمر
+                </span>
+            </div>
+
+            <!-- مؤشر المعلمة الصوتية -->
+            <div id="teacher-status-box" class="flex items-center gap-3 bg-teal-50 border border-teal-200 px-4 py-1.5 rounded-full shadow-inner">
+                <div class="relative flex items-center justify-center w-8 h-8 rounded-full bg-teal-600 text-white">
+                    <span id="teacher-pulse" class="hidden absolute inset-0 rounded-full bg-teal-400 speaking-ring"></span>
+                    <i class="fa-solid fa-chalkboard-user relative z-10 text-sm"></i>
+                </div>
+                <div class="text-xs sm:text-sm">
+                    <p id="teacher-status-text" class="font-bold text-teal-800">المعلمة جاهزة للقراءة</p>
+                    <p class="text-[11px] text-teal-600">صوت تعليمي واضح وهادئ للأطفال • اضغط <i class="fa-solid fa-volume-high"></i></p>
+                </div>
+                <button onclick="stopAudio()" id="stop-audio-btn" class="hidden mr-1 bg-rose-100 hover:bg-rose-200 text-rose-700 px-2.5 py-1 rounded-full text-xs font-bold transition">
+                    <i class="fa-solid fa-stop"></i> إيقاف
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- صندوق الإشعارات اللطيف للأطفال -->
+    <div id="toast-message" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-50 hidden bg-slate-800 text-white px-6 py-3 rounded-2xl shadow-xl font-bold text-sm flex items-center gap-2 transition-all">
+        <i class="fa-solid fa-sparkles text-yellow-400"></i>
+        <span id="toast-text">أحسنت!</span>
+    </div>
+
+    <!-- المحتوى الرئيسي للدرس -->
+    <main class="max-w-5xl mx-auto px-4 pt-6 space-y-10">
+
+        <!-- ========================================== -->
+        <!-- القسم الأول: Read the chart -->
+        <!-- ========================================== -->
+        <section class="bg-white rounded-3xl shadow-lg border border-teal-100 overflow-hidden">
+            <!-- رأس القسم -->
+            <div class="bg-gradient-to-l from-teal-600 to-emerald-600 p-4 sm:px-6 flex flex-wrap items-center justify-between gap-3 text-white">
+                <div class="flex items-center gap-3">
+                    <span class="bg-white text-teal-700 w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-lg shadow">1</span>
+                    <h2 class="en-text text-xl sm:text-2xl font-bold tracking-wide">Read the chart.</h2>
+                    <span class="text-teal-100 text-sm hidden md:inline">(اقرأ الجدول واستمع لنطق المعلمة)</span>
+                </div>
+                <button onclick="speakSequence(chartAllSentences, this)" class="audio-btn bg-white/20 hover:bg-white/30 text-white border border-white/40 px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-2 backdrop-blur-sm">
+                    <i class="fa-solid fa-volume-high"></i>
+                    <span>استمع للجدول كاملاً</span>
+                </button>
+            </div>
+
+            <!-- شرح مبسط للأطفال باللغة العربية -->
+            <div class="bg-amber-50/70 border-b border-amber-100 px-6 py-3 flex items-start gap-3 text-sm text-amber-900">
+                <i class="fa-solid fa-lightbulb text-amber-500 text-lg mt-0.5"></i>
+                <p>
+                    <strong>تذكر يا بطل:</strong> نستخدم <strong>Simple Present</strong> للأشياء التي نفعلها كل يوم كعادة، ونستخدم <strong>Present Progressive</strong> للأشياء التي تحدث <u>الآن</u> في هذه اللحظة!
+                </p>
+            </div>
+
+            <!-- الجدول التفاعلي -->
+            <div class="overflow-x-auto p-4 sm:p-6">
+                <table class="w-full border-collapse rounded-2xl overflow-hidden border-2 border-teal-600 text-right">
+                    <thead>
+                        <tr class="bg-teal-700 text-white text-base sm:text-lg">
+                            <th class="p-3 sm:p-4 border border-teal-600 w-1/5 text-center">الحالة</th>
+                            <th class="p-3 sm:p-4 border border-teal-600 w-2/5 text-center align-middle">
+                                <div class="flex flex-col items-center justify-center w-full">
+                                    <div dir="ltr" class="en-text flex items-center justify-center gap-2 w-full">
+                                        <button onclick="speakText('Present Progressive', this)" class="audio-btn shrink-0 w-7 h-7 bg-teal-600 hover:bg-teal-500 rounded-full text-xs flex items-center justify-center" title="استمع">
+                                            <i class="fa-solid fa-volume-high"></i>
+                                        </button>
+                                        <span data-speak="Present Progressive" class="whitespace-nowrap">Present Progressive</span>
+                                        <span class="w-7 shrink-0" aria-hidden="true"></span>
+                                    </div>
+                                    <p dir="rtl" class="w-full text-center text-xs font-normal text-teal-200 mt-1" style="font-family: 'Cairo', sans-serif;">المضارع المستمر (الآن)</p>
+                                </div>
+                            </th>
+                            <th class="p-3 sm:p-4 border border-teal-600 w-2/5 text-center align-middle">
+                                <div class="flex flex-col items-center justify-center w-full">
+                                    <div dir="ltr" class="en-text flex items-center justify-center gap-2 w-full">
+                                        <button onclick="speakText('Simple Present', this)" class="audio-btn shrink-0 w-7 h-7 bg-teal-600 hover:bg-teal-500 rounded-full text-xs flex items-center justify-center" title="استمع">
+                                            <i class="fa-solid fa-volume-high"></i>
+                                        </button>
+                                        <span data-speak="Simple Present" class="whitespace-nowrap">Simple Present</span>
+                                        <span class="w-7 shrink-0" aria-hidden="true"></span>
+                                    </div>
+                                    <p dir="rtl" class="w-full text-center text-xs font-normal text-teal-200 mt-1" style="font-family: 'Cairo', sans-serif;">المضارع البسيط (العادات)</p>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-teal-200 text-base sm:text-lg">
+                        <!-- صف الإثبات Affirmative -->
+                        <tr class="hover:bg-teal-50/40 transition">
+                            <td class="p-3 sm:p-4 border border-teal-200 bg-teal-50/60 font-bold text-teal-800 text-center">
+                                <span class="en-text block text-base sm:text-lg">Affirmative</span>
+                                <span class="text-xs text-slate-500 font-normal">الجملة المثبتة</span>
+                            </td>
+                            <td class="p-2.5 sm:p-3.5 border border-teal-200">
+                                <div dir="ltr" data-speak="She is reading a comic book now." class="sentence-box flex items-center justify-between gap-2.5 bg-slate-50 px-3 py-2.5 rounded-xl border border-slate-100 transition-all">
+                                    <button onclick="speakText('She is reading a comic book now.', this)" class="audio-btn shrink-0 w-8 h-8 rounded-full bg-sky-100 hover:bg-sky-200 text-sky-700 flex items-center justify-center shadow-sm">
+                                        <i class="fa-solid fa-volume-high text-xs"></i>
+                                    </button>
+                                    <div class="flex-1">
+                                        <p class="sentence-text en-text text-left text-sm lg:text-[15px] whitespace-nowrap text-slate-700 font-medium">
+                                            She <span class="text-sky-600 font-bold italic underline decoration-sky-300">is reading</span> a comic book now.
+                                        </p>
+                                        <p dir="rtl" class="text-center text-xs text-slate-500 font-semibold mt-1">هي تقرأ كتاباً مصوراً الآن.</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-2.5 sm:p-3.5 border border-teal-200">
+                                <div dir="ltr" data-speak="She reads comic books every day." class="sentence-box flex items-center justify-between gap-2.5 bg-slate-50 px-3 py-2.5 rounded-xl border border-slate-100 transition-all">
+                                    <button onclick="speakText('She reads comic books every day.', this)" class="audio-btn shrink-0 w-8 h-8 rounded-full bg-sky-100 hover:bg-sky-200 text-sky-700 flex items-center justify-center shadow-sm">
+                                        <i class="fa-solid fa-volume-high text-xs"></i>
+                                    </button>
+                                    <div class="flex-1">
+                                        <p class="sentence-text en-text text-left text-sm lg:text-[15px] whitespace-nowrap text-slate-700 font-medium">
+                                            She <span class="text-sky-600 font-bold italic underline decoration-sky-300">reads</span> comic books every day.
+                                        </p>
+                                        <p dir="rtl" class="text-center text-xs text-slate-500 font-semibold mt-1">هي تقرأ الكتب المصورة كل يوم.</p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- صف النفي Negative -->
+                        <tr class="hover:bg-teal-50/40 transition">
+                            <td class="p-3 sm:p-4 border border-teal-200 bg-teal-50/60 font-bold text-teal-800 text-center">
+                                <span class="en-text block text-base sm:text-lg">Negative</span>
+                                <span class="text-xs text-slate-500 font-normal">الجملة المنفية</span>
+                            </td>
+                            <td class="p-2.5 sm:p-3.5 border border-teal-200">
+                                <div dir="ltr" data-speak="He is not catching the bus now." class="sentence-box flex items-center justify-between gap-2.5 bg-slate-50 px-3 py-2.5 rounded-xl border border-slate-100 transition-all">
+                                    <button onclick="speakText('He is not catching the bus now.', this)" class="audio-btn shrink-0 w-8 h-8 rounded-full bg-sky-100 hover:bg-sky-200 text-sky-700 flex items-center justify-center shadow-sm">
+                                        <i class="fa-solid fa-volume-high text-xs"></i>
+                                    </button>
+                                    <div class="flex-1">
+                                        <p class="sentence-text en-text text-left text-sm lg:text-[15px] whitespace-nowrap text-slate-700 font-medium">
+                                            He <span class="text-sky-600 font-bold italic underline decoration-sky-300">is not catching</span> the bus now.
+                                        </p>
+                                        <p dir="rtl" class="text-center text-xs text-slate-500 font-semibold mt-1">هو لا يلحق بالحافلة الآن.</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-2.5 sm:p-3.5 border border-teal-200">
+                                <div dir="ltr" data-speak="He doesn't catch the bus to school." class="sentence-box flex items-center justify-between gap-2.5 bg-slate-50 px-3 py-2.5 rounded-xl border border-slate-100 transition-all">
+                                    <button onclick="speakText('He doesn\'t catch the bus to school.', this)" class="audio-btn shrink-0 w-8 h-8 rounded-full bg-sky-100 hover:bg-sky-200 text-sky-700 flex items-center justify-center shadow-sm">
+                                        <i class="fa-solid fa-volume-high text-xs"></i>
+                                    </button>
+                                    <div class="flex-1">
+                                        <p class="sentence-text en-text text-left text-sm lg:text-[15px] whitespace-nowrap text-slate-700 font-medium">
+                                            He <span class="text-sky-600 font-bold italic underline decoration-sky-300">doesn't catch</span> the bus to school.
+                                        </p>
+                                        <p dir="rtl" class="text-center text-xs text-slate-500 font-semibold mt-1">هو لا يركب الحافلة إلى المدرسة.</p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- صف الأسئلة Questions -->
+                        <tr class="hover:bg-teal-50/40 transition">
+                            <td class="p-3 sm:p-4 border border-teal-200 bg-teal-50/60 font-bold text-teal-800 text-center">
+                                <span class="en-text block text-base sm:text-lg">Questions</span>
+                                <span class="text-xs text-slate-500 font-normal">السؤال والإجابة</span>
+                            </td>
+                            <td class="p-2.5 sm:p-3.5 border border-teal-200 space-y-2">
+                                <!-- السؤال -->
+                                <div dir="ltr" data-speak="Are they visiting their grandparents now?" class="sentence-box flex items-center justify-between gap-2.5 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100 transition-all">
+                                    <button onclick="speakText('Are they visiting their grandparents now?', this)" class="audio-btn shrink-0 w-8 h-8 rounded-full bg-sky-100 hover:bg-sky-200 text-sky-700 flex items-center justify-center shadow-sm">
+                                        <i class="fa-solid fa-volume-high text-xs"></i>
+                                    </button>
+                                    <div class="flex-1">
+                                        <p class="sentence-text en-text text-left text-sm lg:text-[15px] whitespace-nowrap text-slate-700 font-medium">
+                                            <span class="text-sky-600 font-bold italic">Are</span> they <span class="text-sky-600 font-bold italic">visiting</span> their grandparents now?
+                                        </p>
+                                        <p dir="rtl" class="text-center text-xs text-slate-500 font-semibold mt-1">هل هم يزورون أجدادهم الآن؟</p>
+                                    </div>
+                                </div>
+                                <!-- الإجابة -->
+                                <div dir="ltr" data-speak="Yes, they are. No, they aren't." class="sentence-box flex items-center justify-between gap-2.5 bg-emerald-50/60 px-3 py-2 rounded-xl border border-emerald-100 transition-all">
+                                    <button onclick="speakText('Yes, they are. No, they aren\'t.', this)" class="audio-btn shrink-0 w-8 h-8 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-700 flex items-center justify-center shadow-sm">
+                                        <i class="fa-solid fa-volume-high text-xs"></i>
+                                    </button>
+                                    <div class="flex-1">
+                                        <p class="sentence-text en-text text-left text-sm lg:text-[15px] whitespace-nowrap text-slate-700 font-medium">
+                                            Yes, they <span class="text-sky-600 font-bold italic">are</span>. / No, they <span class="text-sky-600 font-bold italic">aren't</span>.
+                                        </p>
+                                        <p dir="rtl" class="text-center text-xs text-emerald-700 font-semibold mt-1">نعم، هم كذلك. / لا، ليسوا كذلك.</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-2.5 sm:p-3.5 border border-teal-200 space-y-2">
+                                <!-- السؤال -->
+                                <div dir="ltr" data-speak="Do they visit their grandparents?" class="sentence-box flex items-center justify-between gap-2.5 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100 transition-all">
+                                    <button onclick="speakText('Do they visit their grandparents?', this)" class="audio-btn shrink-0 w-8 h-8 rounded-full bg-sky-100 hover:bg-sky-200 text-sky-700 flex items-center justify-center shadow-sm">
+                                        <i class="fa-solid fa-volume-high text-xs"></i>
+                                    </button>
+                                    <div class="flex-1">
+                                        <p class="sentence-text en-text text-left text-sm lg:text-[15px] whitespace-nowrap text-slate-700 font-medium">
+                                            <span class="text-sky-600 font-bold italic">Do</span> they <span class="text-sky-600 font-bold italic">visit</span> their grandparents?
+                                        </p>
+                                        <p dir="rtl" class="text-center text-xs text-slate-500 font-semibold mt-1">هل يزورون أجدادهم (عادة)؟</p>
+                                    </div>
+                                </div>
+                                <!-- الإجابة -->
+                                <div dir="ltr" data-speak="Yes, they do. No, they don't." class="sentence-box flex items-center justify-between gap-2.5 bg-emerald-50/60 px-3 py-2 rounded-xl border border-emerald-100 transition-all">
+                                    <button onclick="speakText('Yes, they do. No, they don\'t.', this)" class="audio-btn shrink-0 w-8 h-8 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-700 flex items-center justify-center shadow-sm">
+                                        <i class="fa-solid fa-volume-high text-xs"></i>
+                                    </button>
+                                    <div class="flex-1">
+                                        <p class="sentence-text en-text text-left text-sm lg:text-[15px] whitespace-nowrap text-slate-700 font-medium">
+                                            Yes, they <span class="text-sky-600 font-bold italic">do</span>. / No, they <span class="text-sky-600 font-bold italic">don't</span>.
+                                        </p>
+                                        <p dir="rtl" class="text-center text-xs text-emerald-700 font-semibold mt-1">نعم، يفعلون. / لا، لا يفعلون.</p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- القسم الثاني: Look, read, and answer -->
+        <!-- ========================================== -->
+        <section class="bg-white rounded-3xl shadow-lg border border-pink-100 overflow-hidden">
+            <!-- رأس القسم -->
+            <div class="bg-gradient-to-l from-pink-500 to-rose-500 p-4 sm:px-6 flex flex-wrap items-center justify-between gap-3 text-white">
+                <div class="flex items-center gap-3">
+                    <span class="bg-white text-pink-600 w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-lg shadow">2</span>
+                    <h2 class="en-text text-xl sm:text-2xl font-bold tracking-wide">Look, read, and answer.</h2>
+                </div>
+                <button onclick="speakSequence(comicAllSentences, this)" class="audio-btn bg-white/20 hover:bg-white/30 text-white border border-white/40 px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-2 backdrop-blur-sm">
+                    <i class="fa-solid fa-volume-high"></i>
+                    <span>استمع للقصة كاملة</span>
+                </button>
+            </div>
+
+            <!-- شريط أدوات التحديد التفاعلي للطفل -->
+            <div class="bg-slate-50 border-b border-slate-200 p-4 sm:px-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="space-y-1 text-sm">
+                        <p class="font-bold text-slate-700 flex items-center gap-2">
+                            <span class="bg-emerald-600 text-white w-5 h-5 rounded-full inline-flex items-center justify-center text-xs">1</span>
+                            <span class="en-text">Underline the actions describing what the children are doing <b>now</b>.</span>
+                        </p>
+                        <p class="font-bold text-slate-700 flex items-center gap-2">
+                            <span class="bg-blue-600 text-white w-5 h-5 rounded-full inline-flex items-center justify-center text-xs">2</span>
+                            <span class="en-text">Circle the actions that describe their <b>routines</b>.</span>
+                        </p>
+                    </div>
+
+                    <!-- أزرار اختيار القلم -->
+                    <div class="flex flex-wrap items-center gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 px-2">اختر الأداة:</span>
+                        <button id="tool-underline" onclick="setTool('underline')" class="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-emerald-600 text-white shadow transition">
+                            <i class="fa-solid fa-underline"></i>
+                            <span>تسطير (يحدث الآن)</span>
+                        </button>
+                        <button id="tool-circle" onclick="setTool('circle')" class="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-blue-50 transition">
+                            <i class="fa-regular fa-circle"></i>
+                            <span>دائرة (عادة روتينية)</span>
+                        </button>
+                        <button onclick="checkComicAnswers()" class="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white shadow transition">
+                            <i class="fa-solid fa-check-double"></i>
+                            <span>تحقق من إجابتي</span>
+                        </button>
+                        <button onclick="resetComicAnswers()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-rose-600 transition" title="مسح التحديد">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المشاهد المصورة الثلاثة (Comics) -->
+            <div dir="ltr" class="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- المشهد الأول: في الحافلة -->
+                <div class="bg-[#f4a261] rounded-3xl border-4 border-[#e76f51] p-4 flex flex-col justify-between shadow-md relative overflow-hidden">
+                    <div dir="rtl" class="flex items-center justify-between mb-3 z-10">
+                        <span class="bg-white/95 text-orange-800 text-xs font-extrabold px-3 py-1 rounded-full shadow-sm">المشهد 1 • في الحافلة</span>
+                        <button onclick="speakSequence(['What are you doing?', 'I am reading a comic book. I always read comic books.'], this)" class="audio-btn bg-white hover:bg-orange-50 text-orange-700 w-8 h-8 rounded-full flex items-center justify-center shadow">
+                            <i class="fa-solid fa-volume-high text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- فقاعات الحوار (مطابقة لتوزيع الصورة) -->
+                    <div class="grid grid-cols-2 gap-2.5 items-start my-1 z-10">
+                        <!-- فقاعة الولد (يسار) -->
+                        <div data-speak="What are you doing?" class="sentence-box bg-white rounded-3xl p-3 shadow-md border-[3px] border-pink-500 relative transition-all text-center">
+                            <div class="flex items-center justify-between gap-1 mb-1">
+                                <button onclick="speakText('What are you doing?', this)" class="audio-btn text-pink-600 hover:text-pink-800">
+                                    <i class="fa-solid fa-volume-high text-sm"></i>
+                                </button>
+                                <span dir="rtl" class="text-[10px] font-bold text-pink-600">الولد:</span>
+                            </div>
+                            <p class="sentence-text en-text text-center text-sm sm:text-base font-medium text-slate-800 leading-snug">
+                                What <span class="word-chip text-sky-500 font-bold" data-id="c1-1" data-expected="underline" onclick="toggleWord(this)">are</span> you <span class="word-chip text-sky-500 font-bold" data-id="c1-2" data-expected="underline" onclick="toggleWord(this)">doing</span>?
+                            </p>
+                            <p dir="rtl" class="text-center text-[11px] text-slate-500 font-semibold mt-1 pt-1 border-t border-slate-100">ماذا تفعلين؟</p>
+                            <!-- ذيل الفقاعة -->
+                            <div class="w-3 h-3 bg-white border-r-[3px] border-b-[3px] border-pink-500 rotate-45 absolute -bottom-2 left-8"></div>
+                        </div>
+
+                        <!-- فقاعة البنت (يمين) -->
+                        <div data-speak="I am reading a comic book. I always read comic books." class="sentence-box bg-white rounded-3xl p-3 shadow-md border-[3px] border-purple-500 relative mt-4 transition-all text-center">
+                            <div class="flex items-center justify-between gap-1 mb-1">
+                                <button onclick="speakText('I am reading a comic book. I always read comic books.', this)" class="audio-btn text-purple-600 hover:text-purple-800">
+                                    <i class="fa-solid fa-volume-high text-sm"></i>
+                                </button>
+                                <span dir="rtl" class="text-[10px] font-bold text-purple-600">البنت:</span>
+                            </div>
+                            <p class="sentence-text en-text text-center text-xs sm:text-sm font-medium text-slate-800 leading-snug">
+                                I <span class="word-chip text-sky-500 font-bold" data-id="c1-3" data-expected="underline" onclick="toggleWord(this)">am reading</span> a comic book. I <span class="word-chip text-sky-500 font-bold" data-id="c1-4" data-expected="circle" onclick="toggleWord(this)">always read</span> comic books.
+                            </p>
+                            <p dir="rtl" class="text-center text-[11px] text-slate-500 font-semibold mt-1 pt-1 border-t border-slate-100">أنا أقرأ كتاباً مصوراً. أنا دائماً أقرأ الكتب المصورة.</p>
+                            <!-- ذيل الفقاعة -->
+                            <div class="w-3 h-3 bg-white border-r-[3px] border-b-[3px] border-purple-500 rotate-45 absolute -bottom-2 right-8"></div>
+                        </div>
+                    </div>
+
+                    <!-- رسم SVG تفصيلي واضح للمشهد الأول -->
+                    <div class="mt-2 rounded-2xl overflow-hidden shadow-inner border-2 border-orange-300/60 bg-[#e9965b]">
+                        <svg viewBox="0 0 300 175" class="w-full h-44 block">
+                            <!-- نوافذ الحافلة في الخلف -->
+                            <rect x="8" y="8" width="135" height="65" rx="10" fill="#bae6fd" stroke="#9a3412" stroke-width="3"/>
+                            <rect x="157" y="8" width="135" height="65" rx="10" fill="#bae6fd" stroke="#9a3412" stroke-width="3"/>
+                            <!-- مقاعد الحافلة الزرقاء -->
+                            <rect x="15" y="45" width="125" height="125" rx="16" fill="#2563eb" stroke="#1e3a8a" stroke-width="2.5"/>
+                            <rect x="25" y="55" width="105" height="110" rx="12" fill="#3b82f6"/>
+                            <rect x="160" y="45" width="125" height="125" rx="16" fill="#2563eb" stroke="#1e3a8a" stroke-width="2.5"/>
+                            <rect x="170" y="55" width="105" height="110" rx="12" fill="#3b82f6"/>
+
+                            <!-- الولد (يسار) بقبعة بنفسجية وقميص أخضر -->
+                            <g>
+                                <!-- الجسم -->
+                                <path d="M35 170 L40 112 Q75 102 110 112 L118 170 Z" fill="#16a34a" stroke="#14532d" stroke-width="2"/>
+                                <!-- الرقبة والوجه -->
+                                <rect x="67" y="95" width="16" height="16" rx="5" fill="#fed7aa"/>
+                                <ellipse cx="75" cy="78" rx="22" ry="25" fill="#fed7aa" stroke="#c2410c" stroke-width="1.5"/>
+                                <!-- الشعر والقبعة البنفسجية -->
+                                <path d="M53 68 Q75 45 97 68 Z" fill="#7e22ce" stroke="#581c87" stroke-width="1.5"/>
+                                <path d="M68 66 L112 68 Q115 73 95 74 L65 72 Z" fill="#9333ea" stroke="#581c87" stroke-width="1.5"/>
+                                <!-- ملامح الوجه -->
+                                <circle cx="82" cy="76" r="2.5" fill="#1e293b"/>
+                                <circle cx="91" cy="76" r="2.5" fill="#1e293b"/>
+                                <ellipse cx="86" cy="89" rx="4" ry="5" fill="#991b1b"/>
+                                <!-- اليد -->
+                                <path d="M42 125 Q55 145 85 142" fill="none" stroke="#15803d" stroke-width="14" stroke-linecap="round"/>
+                                <circle cx="90" cy="142" r="8" fill="#fed7aa"/>
+                            </g>
+
+                            <!-- البنت (يمين) بشعر أشقر وسترة وردية تقرأ مجلة -->
+                            <g>
+                                <!-- الشعر الأشقر الخلفي -->
+                                <path d="M185 75 L176 115 L248 115 L238 75 Z" fill="#f59e0b"/>
+                                <!-- الجسم والسترة الوردية -->
+                                <path d="M175 170 L182 112 Q212 104 242 112 L250 170 Z" fill="#db2777" stroke="#831843" stroke-width="2"/>
+                                <rect x="234" y="130" width="14" height="8" rx="2" fill="#facc15"/>
+                                <!-- الوجه -->
+                                <ellipse cx="212" cy="78" rx="21" ry="24" fill="#fed7aa" stroke="#c2410c" stroke-width="1.5"/>
+                                <!-- الغرة الشقراء -->
+                                <path d="M190 74 Q212 50 234 74 Q218 65 212 72 Q204 65 190 74 Z" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
+                                <!-- ملامح الوجه -->
+                                <circle cx="204" cy="78" r="2.5" fill="#1e293b"/>
+                                <circle cx="216" cy="78" r="2.5" fill="#1e293b"/>
+                                <path d="M206 90 Q211 95 216 90" fill="none" stroke="#991b1b" stroke-width="2" stroke-linecap="round"/>
+                                <!-- المجلة المصورة المفتوحة -->
+                                <polygon points="172,112 212,122 212,168 172,158" fill="#ffffff" stroke="#475569" stroke-width="2"/>
+                                <polygon points="252,112 212,122 212,168 252,158" fill="#fef9c3" stroke="#475569" stroke-width="2"/>
+                                <!-- رسومات ملونة داخل المجلة -->
+                                <rect x="180" y="122" width="24" height="16" rx="2" fill="#38bdf8"/>
+                                <rect x="180" y="142" width="24" height="12" rx="2" fill="#f43f5e"/>
+                                <rect x="220" y="122" width="24" height="18" rx="2" fill="#4ade80"/>
+                                <rect x="220" y="144" width="24" height="10" rx="2" fill="#a855f7"/>
+                                <!-- اليدان تمسكان المجلة -->
+                                <circle cx="174" cy="142" r="7" fill="#fed7aa" stroke="#c2410c" stroke-width="1"/>
+                                <circle cx="250" cy="142" r="7" fill="#fed7aa" stroke="#c2410c" stroke-width="1"/>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- المشهد الثاني: أمام المدرسة -->
+                <div class="bg-[#fde68a] rounded-3xl border-4 border-[#f59e0b] p-4 flex flex-col justify-between shadow-md relative overflow-hidden">
+                    <div dir="rtl" class="flex items-center justify-between mb-3 z-10">
+                        <span class="bg-white/95 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full shadow-sm">المشهد 2 • عند المدرسة</span>
+                        <button onclick="speakSequence(['Are we taking the bus home?', 'No, we aren\'t.'], this)" class="audio-btn bg-white hover:bg-amber-50 text-amber-700 w-8 h-8 rounded-full flex items-center justify-center shadow">
+                            <i class="fa-solid fa-volume-high text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- فقاعات الحوار (مطابقة لتوزيع الصورة) -->
+                    <div class="space-y-2.5 my-1 z-10">
+                        <!-- فقاعة الولد في الأعلى -->
+                        <div data-speak="Are we taking the bus home?" class="sentence-box bg-white rounded-3xl p-3 shadow-md border-[3px] border-pink-500 max-w-[85%] relative transition-all text-center">
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <button onclick="speakText('Are we taking the bus home?', this)" class="audio-btn text-pink-600 hover:text-pink-800">
+                                    <i class="fa-solid fa-volume-high text-sm"></i>
+                                </button>
+                                <span dir="rtl" class="text-[10px] font-bold text-pink-600">الولد يسأل:</span>
+                            </div>
+                            <p class="sentence-text en-text text-center text-sm sm:text-base font-medium text-slate-800 leading-snug">
+                                <span class="word-chip text-sky-500 font-bold" data-id="c2-1" data-expected="underline" onclick="toggleWord(this)">Are</span> we <span class="word-chip text-sky-500 font-bold" data-id="c2-2" data-expected="underline" onclick="toggleWord(this)">taking</span> the bus home?
+                            </p>
+                            <p dir="rtl" class="text-center text-[11px] text-slate-500 font-semibold mt-1 pt-1 border-t border-slate-100">هل سنركب الحافلة إلى المنزل؟</p>
+                            <div class="w-3 h-3 bg-white border-r-[3px] border-b-[3px] border-pink-500 rotate-45 absolute -bottom-2 left-10"></div>
+                        </div>
+
+                        <!-- فقاعة الأخت في الأسفل يمين -->
+                        <div data-speak="No, we aren't." class="sentence-box bg-white rounded-3xl p-2.5 shadow-md border-[3px] border-purple-500 max-w-[75%] ml-auto relative transition-all text-center">
+                            <div class="flex items-center justify-between gap-2 mb-0.5">
+                                <button onclick="speakText('No, we aren\'t.', this)" class="audio-btn text-purple-600 hover:text-purple-800">
+                                    <i class="fa-solid fa-volume-high text-sm"></i>
+                                </button>
+                                <span dir="rtl" class="text-[10px] font-bold text-purple-600">الأخت تجيب:</span>
+                            </div>
+                            <p class="sentence-text en-text text-center text-sm sm:text-base font-medium text-slate-800">
+                                <span class="word-chip text-sky-500 font-bold" data-id="c2-3" data-expected="underline" onclick="toggleWord(this)">No</span>, we <span class="word-chip text-sky-500 font-bold" data-id="c2-4" data-expected="underline" onclick="toggleWord(this)">aren't</span>.
+                            </p>
+                            <p dir="rtl" class="text-center text-[11px] text-slate-500 font-semibold mt-1 pt-1 border-t border-slate-100">لا، لن نركبها.</p>
+                        </div>
+                    </div>
+
+                    <!-- رسم SVG تفصيلي واضح للمشهد الثاني -->
+                    <div class="mt-2 rounded-2xl overflow-hidden shadow-inner border-2 border-amber-300 bg-[#bae6fd]">
+                        <svg viewBox="0 0 300 175" class="w-full h-44 block">
+                            <!-- مبنى المدرسة -->
+                            <rect x="10" y="18" width="280" height="140" fill="#fed7aa" stroke="#ea580c" stroke-width="2"/>
+                            <rect x="5" y="10" width="290" height="12" rx="3" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+                            <!-- نوافذ المدرسة -->
+                            <rect x="28" y="34" width="44" height="38" rx="3" fill="#7dd3fc" stroke="#ffffff" stroke-width="3"/>
+                            <rect x="128" y="34" width="44" height="38" rx="3" fill="#7dd3fc" stroke="#ffffff" stroke-width="3"/>
+                            <rect x="228" y="34" width="44" height="38" rx="3" fill="#7dd3fc" stroke="#ffffff" stroke-width="3"/>
+                            <!-- باب المدرسة -->
+                            <rect x="118" y="92" width="64" height="66" fill="#9a3412" stroke="#ffffff" stroke-width="3"/>
+                            <!-- الرصيف -->
+                            <rect x="0" y="155" width="300" height="20" fill="#cbd5e1"/>
+
+                            <!-- الولد بحقيبة ظهر زرقاء -->
+                            <g>
+                                <!-- حقيبة الظهر -->
+                                <rect x="92" y="84" width="28" height="40" rx="8" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="2"/>
+                                <!-- البنطال البيج -->
+                                <rect x="65" y="132" width="16" height="38" rx="4" fill="#d97706"/>
+                                <rect x="85" y="132" width="16" height="38" rx="4" fill="#d97706"/>
+                                <!-- القميص البنفسجي -->
+                                <rect x="60" y="86" width="46" height="48" rx="10" fill="#6b21a8" stroke="#4c1d95" stroke-width="2"/>
+                                <!-- الرأس والشعر -->
+                                <ellipse cx="83" cy="64" rx="18" ry="20" fill="#fed7aa" stroke="#c2410c" stroke-width="1.5"/>
+                                <path d="M65 56 Q83 38 101 56 Q92 48 83 52 Q74 48 65 56 Z" fill="#b45309"/>
+                                <circle cx="78" cy="63" r="2" fill="#1e293b"/>
+                                <circle cx="88" cy="63" r="2" fill="#1e293b"/>
+                                <path d="M79 73 Q83 77 87 73" fill="none" stroke="#991b1b" stroke-width="2" stroke-linecap="round"/>
+                            </g>
+
+                            <!-- الأخت بجاكيت أزرق وتنورة زرقاء -->
+                            <g>
+                                <!-- التنورة الطويلة -->
+                                <path d="M188 122 L232 122 L238 170 L182 170 Z" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+                                <!-- البلوزة الوردية والجاكيت السماوي -->
+                                <rect x="190" y="76" width="40" height="48" rx="8" fill="#ec4899"/>
+                                <path d="M186 76 L200 76 L200 124 L184 124 Z" fill="#7dd3fc" stroke="#0284c7" stroke-width="1.5"/>
+                                <path d="M220 76 L234 76 L236 124 L220 124 Z" fill="#7dd3fc" stroke="#0284c7" stroke-width="1.5"/>
+                                <!-- الرأس والشعر البرتقالي المجعد -->
+                                <ellipse cx="210" cy="52" rx="18" ry="21" fill="#fed7aa" stroke="#c2410c" stroke-width="1.5"/>
+                                <path d="M190 52 Q192 26 210 26 Q228 26 230 52 L234 86 L224 86 L224 54 Q210 42 196 54 L196 86 L186 86 Z" fill="#ea580c"/>
+                                <circle cx="204" cy="51" r="2" fill="#1e293b"/>
+                                <circle cx="215" cy="51" r="2" fill="#1e293b"/>
+                                <path d="M206 62 Q210 65 214 62" fill="none" stroke="#991b1b" stroke-width="2" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- المشهد الثالث: في السيارة -->
+                <div class="bg-[#dbeafe] rounded-3xl border-4 border-[#3b82f6] p-4 flex flex-col justify-between shadow-md relative overflow-hidden">
+                    <div dir="rtl" class="flex items-center justify-between mb-2 z-10">
+                        <span class="bg-white/95 text-blue-800 text-xs font-extrabold px-3 py-1 rounded-full shadow-sm">المشهد 3 • في السيارة</span>
+                        <button onclick="speakSequence(['I love going to our grandparents\' house! But Mom doesn\'t usually drive us to their house.', 'Yes, she does.', 'Grandma sometimes makes chocolate cake!'], this)" class="audio-btn bg-white hover:bg-blue-50 text-blue-700 w-8 h-8 rounded-full flex items-center justify-center shadow">
+                            <i class="fa-solid fa-volume-high text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- فقاعة البنت العلوية -->
+                    <div data-speak="I love going to our grandparents' house! But Mom doesn't usually drive us to their house." class="sentence-box bg-white rounded-3xl p-2.5 shadow-md border-[3px] border-purple-500 relative z-10 transition-all text-center">
+                        <div class="flex items-center justify-between gap-2 mb-0.5">
+                            <button onclick="speakText('I love going to our grandparents\' house! But Mom doesn\'t usually drive us to their house.', this)" class="audio-btn text-purple-600 hover:text-purple-800">
+                                <i class="fa-solid fa-volume-high text-sm"></i>
+                            </button>
+                            <span dir="rtl" class="text-[10px] font-bold text-purple-600">البنت:</span>
+                        </div>
+                        <p class="sentence-text en-text text-center text-xs sm:text-sm font-medium text-slate-800 leading-snug">
+                            I <span class="word-chip text-sky-500 font-bold" data-id="c3-1" data-expected="circle" onclick="toggleWord(this)">love</span> going to our grandparents' house! But Mom <span class="word-chip text-sky-500 font-bold" data-id="c3-2" data-expected="circle" onclick="toggleWord(this)">doesn't usually drive</span> us to their house.
+                        </p>
+                        <p dir="rtl" class="text-center text-[11px] text-slate-500 font-semibold mt-1 pt-1 border-t border-slate-100">أحب الذهاب إلى بيت أجدادنا! لكن أمي لا توصلنا بالسيارة عادةً إلى بيتهم.</p>
+                    </div>
+
+                    <!-- رسم SVG تفصيلي واضح للمشهد الثالث (داخل السيارة) -->
+                    <div class="my-2 rounded-2xl overflow-hidden shadow-inner border-2 border-blue-300 bg-[#fde68a]">
+                        <svg viewBox="0 0 300 135" class="w-full h-32 block">
+                            <!-- زجاج السيارة الخلفي والطريق -->
+                            <path d="M25 12 L275 12 L262 78 L38 78 Z" fill="#bae6fd" stroke="#d97706" stroke-width="3"/>
+                            <!-- الطريق والأرض الخضراء -->
+                            <rect x="38" y="54" width="224" height="24" fill="#86efac"/>
+                            <polygon points="125,54 175,54 205,78 95,78" fill="#cbd5e1"/>
+                            <!-- مساند الرأس الزرقاء -->
+                            <rect x="65" y="42" width="44" height="30" rx="8" fill="#1d4ed8"/>
+                            <rect x="191" y="42" width="44" height="30" rx="8" fill="#1d4ed8"/>
+                            <!-- المقعد الخلفي الأزرق -->
+                            <rect x="18" y="72" width="264" height="63" rx="14" fill="#2563eb" stroke="#1e3a8a" stroke-width="2"/>
+
+                            <!-- البنت (يسار) بحزام الأمان وقميص أحمر -->
+                            <g>
+                                <rect x="58" y="84" width="54" height="50" rx="12" fill="#ef4444" stroke="#991b1b" stroke-width="1.5"/>
+                                <!-- حزام الأمان -->
+                                <line x1="56" y1="84" x2="110" y2="134" stroke="#475569" stroke-width="7" stroke-linecap="round"/>
+                                <!-- الرأس والشعر الأحمر -->
+                                <ellipse cx="85" cy="62" rx="18" ry="20" fill="#fed7aa" stroke="#c2410c" stroke-width="1.5"/>
+                                <path d="M66 60 Q68 36 85 36 Q102 36 104 60 L106 84 L96 84 L96 60 Q85 50 74 60 L74 84 L64 84 Z" fill="#ea580c"/>
+                                <circle cx="80" cy="61" r="2" fill="#1e293b"/>
+                                <circle cx="91" cy="61" r="2" fill="#1e293b"/>
+                                <path d="M81 71 Q85 74 89 71" fill="none" stroke="#991b1b" stroke-width="2"/>
+                            </g>
+
+                            <!-- الولد (يمين) بحزام الأمان وقميص بنفسجي -->
+                            <g>
+                                <rect x="188" y="84" width="54" height="50" rx="12" fill="#7e22ce" stroke="#4c1d95" stroke-width="1.5"/>
+                                <!-- حزام الأمان -->
+                                <line x1="244" y1="84" x2="190" y2="134" stroke="#475569" stroke-width="7" stroke-linecap="round"/>
+                                <!-- الرأس والشعر البني -->
+                                <ellipse cx="215" cy="62" rx="18" ry="20" fill="#fed7aa" stroke="#c2410c" stroke-width="1.5"/>
+                                <path d="M197 55 Q215 36 233 55 Q223 47 215 51 Q207 47 197 55 Z" fill="#92400e"/>
+                                <circle cx="209" cy="61" r="2" fill="#1e293b"/>
+                                <circle cx="220" cy="61" r="2" fill="#1e293b"/>
+                                <path d="M210 71 Q215 75 220 71" fill="none" stroke="#991b1b" stroke-width="2"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- فقاعتا الحوار السفليتان (اليمين واليسار) -->
+                    <div class="grid grid-cols-2 gap-2 z-10">
+                        <div data-speak="Grandma sometimes makes chocolate cake!" class="sentence-box bg-white rounded-3xl p-2 shadow-md border-[3px] border-purple-500 transition-all text-center">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <button onclick="speakText('Grandma sometimes makes chocolate cake!', this)" class="audio-btn text-purple-600">
+                                    <i class="fa-solid fa-volume-high text-xs"></i>
+                                </button>
+                                <span dir="rtl" class="text-[10px] font-bold text-purple-600">البنت:</span>
+                            </div>
+                            <p class="sentence-text en-text text-center text-[11px] sm:text-xs font-medium text-slate-800 leading-tight">
+                                Grandma <span class="word-chip text-sky-500 font-bold" data-id="c3-3" data-expected="circle" onclick="toggleWord(this)">sometimes makes</span> chocolate cake!
+                            </p>
+                            <p dir="rtl" class="text-center text-[10px] text-slate-500 font-semibold mt-1 pt-1 border-t border-slate-100">جدتي تصنع أحياناً كعكة الشوكولاتة!</p>
+                        </div>
+
+                        <div data-speak="Yes, she does." class="sentence-box bg-white rounded-3xl p-2 shadow-md border-[3px] border-pink-500 transition-all text-center">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <button onclick="speakText('Yes, she does.', this)" class="audio-btn text-pink-600">
+                                    <i class="fa-solid fa-volume-high text-xs"></i>
+                                </button>
+                                <span dir="rtl" class="text-[10px] font-bold text-pink-600">الولد:</span>
+                            </div>
+                            <p class="sentence-text en-text text-center text-xs font-medium text-slate-800">
+                                <span class="word-chip text-sky-500 font-bold" data-id="c3-4" data-expected="circle" onclick="toggleWord(this)">Yes</span>, she <span class="word-chip text-sky-500 font-bold" data-id="c3-5" data-expected="circle" onclick="toggleWord(this)">does</span>.
+                            </p>
+                            <p dir="rtl" class="text-center text-[10px] text-slate-500 font-semibold mt-1 pt-1 border-t border-slate-100">نعم، هي تفعل ذلك.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- القسم الثالث: Read and choose the correct answers -->
+        <!-- ========================================== -->
+        <section class="bg-white rounded-3xl shadow-lg border border-indigo-100 overflow-hidden">
+            <!-- رأس القسم -->
+            <div class="bg-gradient-to-l from-indigo-600 to-blue-600 p-4 sm:px-6 flex flex-wrap items-center justify-between gap-3 text-white">
+                <div class="flex items-center gap-3">
+                    <span class="bg-white text-indigo-700 w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-lg shadow">3</span>
+                    <h2 class="en-text text-xl sm:text-2xl font-bold tracking-wide">Read and choose the correct answers.</h2>
+                </div>
+                <span class="text-xs sm:text-sm bg-white/20 px-3 py-1 rounded-full">اختر الإجابة الصحيحة لتكتمل القاعدة</span>
+            </div>
+
+            <!-- الأسئلة الثلاثة التفاعلية -->
+            <div class="p-5 sm:p-8 space-y-6">
+                
+                <!-- السؤال 1 -->
+                <div dir="ltr" data-speak="We use the Simple Present to talk about routines and habits." class="sentence-box bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 flex flex-col gap-3 transition-all">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-teal-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">1</span>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <button onclick="speakText('We use the Simple Present to talk about routines and habits.', this)" class="audio-btn bg-indigo-100 hover:bg-indigo-200 text-indigo-700 w-8 h-8 rounded-full flex items-center justify-center">
+                                        <i class="fa-solid fa-volume-high text-xs"></i>
+                                    </button>
+                                    <span dir="rtl" class="text-xs text-slate-400">استمع للجملة</span>
+                                </div>
+                                <p class="sentence-text en-text text-left text-base sm:text-lg text-slate-800 font-medium leading-relaxed">
+                                    We use the 
+                                    <span class="inline-flex flex-wrap gap-2 mx-1 my-1">
+                                        <button onclick="checkQuiz(1, 'Simple Present', this)" class="quiz-btn-1 px-3 py-1 rounded-xl border-2 border-sky-300 bg-white text-sky-700 font-bold hover:bg-sky-50 transition">Simple Present</button>
+                                        <button onclick="checkQuiz(1, 'Present Progressive', this)" class="quiz-btn-1 px-3 py-1 rounded-xl border-2 border-sky-300 bg-white text-sky-700 font-bold hover:bg-sky-50 transition">Present Progressive</button>
+                                    </span>
+                                    to talk about routines and habits.
+                                </p>
+                            </div>
+                        </div>
+                        <div dir="rtl" id="quiz-feedback-1" class="text-sm font-bold shrink-0"></div>
+                    </div>
+                    <p dir="rtl" class="w-full text-center text-xs sm:text-sm text-slate-500 font-semibold pt-2 border-t border-slate-200/70">نحن نستخدم (المضارع البسيط / المضارع المستمر) للحديث عن الروتين والعادات اليومية.</p>
+                </div>
+
+                <!-- السؤال 2 -->
+                <div dir="ltr" data-speak="We use the Present Progressive to talk about things that are happening now." class="sentence-box bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 flex flex-col gap-3 transition-all">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-teal-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">2</span>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <button onclick="speakText('We use the Present Progressive to talk about things that are happening now.', this)" class="audio-btn bg-indigo-100 hover:bg-indigo-200 text-indigo-700 w-8 h-8 rounded-full flex items-center justify-center">
+                                        <i class="fa-solid fa-volume-high text-xs"></i>
+                                    </button>
+                                    <span dir="rtl" class="text-xs text-slate-400">استمع للجملة</span>
+                                </div>
+                                <p class="sentence-text en-text text-left text-base sm:text-lg text-slate-800 font-medium leading-relaxed">
+                                    We use the 
+                                    <span class="inline-flex flex-wrap gap-2 mx-1 my-1">
+                                        <button onclick="checkQuiz(2, 'Simple Present', this)" class="quiz-btn-2 px-3 py-1 rounded-xl border-2 border-sky-300 bg-white text-sky-700 font-bold hover:bg-sky-50 transition">Simple Present</button>
+                                        <button onclick="checkQuiz(2, 'Present Progressive', this)" class="quiz-btn-2 px-3 py-1 rounded-xl border-2 border-sky-300 bg-white text-sky-700 font-bold hover:bg-sky-50 transition">Present Progressive</button>
+                                    </span>
+                                    to talk about things that are happening now.
+                                </p>
+                            </div>
+                        </div>
+                        <div dir="rtl" id="quiz-feedback-2" class="text-sm font-bold shrink-0"></div>
+                    </div>
+                    <p dir="rtl" class="w-full text-center text-xs sm:text-sm text-slate-500 font-semibold pt-2 border-t border-slate-200/70">نحن نستخدم (المضارع البسيط / المضارع المستمر) للحديث عن الأشياء التي تحدث الآن.</p>
+                </div>
+
+                <!-- السؤال 3 -->
+                <div dir="ltr" data-speak="We use to be plus verb plus ing to form the Present Progressive." class="sentence-box bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 flex flex-col gap-3 transition-all">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-teal-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">3</span>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <button onclick="speakText('We use to be plus verb plus ing to form the Present Progressive.', this)" class="audio-btn bg-indigo-100 hover:bg-indigo-200 text-indigo-700 w-8 h-8 rounded-full flex items-center justify-center">
+                                        <i class="fa-solid fa-volume-high text-xs"></i>
+                                    </button>
+                                    <span dir="rtl" class="text-xs text-slate-400">استمع للجملة</span>
+                                </div>
+                                <p class="sentence-text en-text text-left text-base sm:text-lg text-slate-800 font-medium leading-relaxed">
+                                    We use <i>to be</i> + verb + <i>-ing</i> to form the 
+                                    <span class="inline-flex flex-wrap gap-2 mx-1 my-1">
+                                        <button onclick="checkQuiz(3, 'Simple Present', this)" class="quiz-btn-3 px-3 py-1 rounded-xl border-2 border-sky-300 bg-white text-sky-700 font-bold hover:bg-sky-50 transition">Simple Present</button>
+                                        <button onclick="checkQuiz(3, 'Present Progressive', this)" class="quiz-btn-3 px-3 py-1 rounded-xl border-2 border-sky-300 bg-white text-sky-700 font-bold hover:bg-sky-50 transition">Present Progressive</button>
+                                    </span>.
+                                </p>
+                            </div>
+                        </div>
+                        <div dir="rtl" id="quiz-feedback-3" class="text-sm font-bold shrink-0"></div>
+                    </div>
+                    <p dir="rtl" class="w-full text-center text-xs sm:text-sm text-slate-500 font-semibold pt-2 border-t border-slate-200/70">نحن نستخدم (فعل الكينونة + الفعل + ing) لتكوين زمن (المضارع البسيط / المضارع المستمر).</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- بطاقة الهدف التعليمي: Objective (أسفل الصفحة وموسطة) -->
+        <!-- ========================================== -->
+        <section class="pt-4">
+            <div dir="ltr" data-speak="By the end of this lesson, students should have reviewed when to use the Present Progressive and the Simple Present." class="sentence-box relative bg-[#fce7f3] border-[3px] border-[#e11d74] rounded-3xl px-5 sm:px-8 pt-8 pb-5 shadow-md transition-all text-center">
+                <!-- شارة العنوان العلوية المتوسطة -->
+                <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-white border-2 border-pink-200 px-6 py-1 rounded-2xl shadow-md flex items-center justify-center gap-2 whitespace-nowrap">
+                    <span class="en-text text-xl sm:text-2xl font-extrabold text-[#e11d74] tracking-wide">Objective</span>
+                    <span dir="rtl" class="text-xs font-bold text-pink-600 bg-pink-50 px-2.5 py-0.5 rounded-full">الهدف التعليمي</span>
+                </div>
+
+                <!-- زر الاستماع -->
+                <button onclick="speakText('By the end of this lesson, students should have reviewed when to use the Present Progressive and the Simple Present.', this)" class="audio-btn mx-auto mb-2.5 bg-white hover:bg-pink-100 text-[#e11d74] border border-pink-200 w-9 h-9 rounded-full flex items-center justify-center shadow-sm" title="استمع للهدف">
+                    <i class="fa-solid fa-volume-high text-sm"></i>
+                </button>
+
+                <!-- النص الإنجليزي المتوسط -->
+                <p class="sentence-text en-text text-center text-base sm:text-lg text-slate-700 font-medium leading-relaxed">
+                    By the end of this lesson, students should have reviewed when to use the <span class="text-[#e11d74] font-bold">Present Progressive</span> and the <span class="text-[#e11d74] font-bold">Simple Present</span>.
+                </p>
+
+                <!-- الترجمة العربية المتوسطة -->
+                <p dir="rtl" class="w-full text-center text-xs sm:text-sm text-pink-900/90 font-bold mt-3 pt-2.5 border-t border-pink-300/70">
+                    بنهاية هذا الدرس، سيكون الطلاب قد راجعوا متى يُستخدم زمن المضارع المستمر (Present Progressive) وزمن المضارع البسيط (Simple Present).
+                </p>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- شارة رقم الصفحة والوحدة: UNIT 2 • PAGE 24 -->
+        <!-- ========================================== -->
+        <div class="flex justify-center pt-2">
+            <div dir="ltr" class="bg-[#fffbeb] border border-amber-200/80 rounded-3xl p-3 sm:px-6 shadow-md inline-flex items-center gap-4">
+                <!-- مربع الرقم المتدرج -->
+                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-rose-500 via-pink-600 to-teal-800 text-white font-extrabold text-xl sm:text-2xl flex items-center justify-center shadow-md shrink-0 en-text">
+                    24
+                </div>
+                <!-- النصوص الإنجليزية والعربية -->
+                <div class="text-left">
+                    <div class="en-text text-lg sm:text-xl font-extrabold text-teal-900 tracking-wide flex items-center gap-1.5">
+                        <span>UNIT 2</span>
+                        <span class="text-teal-700">•</span>
+                        <span>PAGE <span class="text-rose-500">24</span></span>
+                    </div>
+                    <p dir="rtl" class="text-xs sm:text-sm font-bold text-amber-800 mt-0.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-book-open text-sky-500"></i>
+                        <span>صفحة ٢٤ • كتاب الطالب</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- تذييل تعليمي -->
+    <footer class="max-w-5xl mx-auto px-4 pt-8 pb-4 text-center">
+        <div class="bg-white/80 border border-slate-200/80 rounded-2xl py-3 px-6 inline-flex flex-wrap items-center justify-center gap-3 shadow-sm text-xs sm:text-sm text-slate-600">
+            <span class="en-text font-extrabold text-teal-700 tracking-wide">LANGUA LEARN</span>
+            <span class="text-slate-300">•</span>
+            <span class="font-bold text-slate-700">الأستاذ ماجد سعد السويهري</span>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- البرمجة التفاعلية ونظام الصوت التعليمي للمعلمة -->
+    <!-- ========================================== -->
+    <script>
+        // قوائم الجمل للقراءة المتسلسلة (تبدأ بعمود Simple Present أولاً ثم Present Progressive)
+        const chartAllSentences = [
+            "Simple Present",
+            "She reads comic books every day.",
+            "He doesn't catch the bus to school.",
+            "Do they visit their grandparents?",
+            "Yes, they do. No, they don't.",
+            "Present Progressive",
+            "She is reading a comic book now.",
+            "He is not catching the bus now.",
+            "Are they visiting their grandparents now?",
+            "Yes, they are. No, they aren't."
+        ];
+
+        const comicAllSentences = [
+            "What are you doing?",
+            "I am reading a comic book. I always read comic books.",
+            "Are we taking the bus home?",
+            "No, we aren't.",
+            "I love going to our grandparents' house! But Mom doesn't usually drive us to their house.",
+            "Yes, she does.",
+            "Grandma sometimes makes chocolate cake!"
+        ];
+
+        // متغيرات التحكم بالصوت
+        let preferredFemaleVoice = null;
+        let isSequencePlaying = false;
+        let currentAudioElement = null;
+        let currentAbortController = null;
+        const audioCache = new Map(); // تخزين مؤقت للصوت لتشغيل فوري دون تأخير
+        const pendingFetches = new Map(); // منع تكرار الطلبات لنفس الجملة
+
+        // تحويل بيانات PCM 16-bit القادمة من Gemini TTS إلى ملف WAV قابل للتشغيل
+        function pcmToWavBlob(base64Data, sampleRate = 24000) {
+            const binaryString = atob(base64Data);
+            const len = binaryString.length;
+            const pcmBytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                pcmBytes[i] = binaryString.charCodeAt(i);
+            }
+
+            const wavHeader = new ArrayBuffer(44);
+            const view = new DataView(wavHeader);
+
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + pcmBytes.length, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true); // Subchunk1Size (16 for PCM)
+            view.setUint16(20, 1, true);  // AudioFormat (1 for PCM)
+            view.setUint16(22, 1, true);  // NumChannels (1 = Mono)
+            view.setUint32(24, sampleRate, true); // SampleRate
+            view.setUint32(28, sampleRate * 2, true); // ByteRate (SampleRate * NumChannels * BitsPerSample/8)
+            view.setUint16(32, 2, true);  // BlockAlign (NumChannels * BitsPerSample/8)
+            view.setUint16(34, 16, true); // BitsPerSample (16 bits)
+            writeString(36, 'data');
+            view.setUint32(40, pcmBytes.length, true);
+
+            return new Blob([wavHeader, pcmBytes], { type: 'audio/wav' });
+        }
+
+        // جلب صوت المعلمة التعليمية الحقيقي عبر Gemini TTS API
+        async function fetchTeacherVoiceUrl(text, signal = null) {
+            if (audioCache.has(text)) {
+                return audioCache.get(text);
+            }
+
+            if (pendingFetches.has(text)) {
+                return pendingFetches.get(text);
+            }
+
+            const fetchPromise = (async () => {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+                // توجيه المعلمة لتقرأ بهدوء واتزان دون تسارع وبمخارج حروف واضحة للأطفال
+                const educationalPrompt = `Read the following English sentence calmly, gently, and steadily without rushing, using a clear, soothing female teacher voice so children can easily follow every word: "${text}"`;
+
+                const payload = {
+                    contents: [{
+                        parts: [{ text: educationalPrompt }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                // صوت Sulafat دافئ وهادئ ومثالي كمعلمة للأطفال
+                                prebuiltVoiceConfig: { voiceName: "Sulafat" }
+                            }
+                        }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+
+                let delay = 500;
+                for (let attempt = 0; attempt < 2; attempt++) {
+                    try {
+                        const fetchOptions = {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        };
+                        if (signal) fetchOptions.signal = signal;
+
+                        const response = await fetch(apiUrl, fetchOptions);
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+
+                        const result = await response.json();
+                        const part = result?.candidates?.[0]?.content?.parts?.[0];
+                        const audioData = part?.inlineData?.data;
+                        const mimeType = part?.inlineData?.mimeType || "audio/L16;rate=24000";
+
+                        if (audioData) {
+                            const rateMatch = mimeType.match(/rate=(\d+)/);
+                            const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+                            const wavBlob = pcmToWavBlob(audioData, sampleRate);
+                            const url = URL.createObjectURL(wavBlob);
+                            audioCache.set(text, url);
+                            return url;
+                        }
+                    } catch (err) {
+                        if (err.name === 'AbortError') throw err;
+                        if (attempt < 1) {
+                            await new Promise(res => setTimeout(res, delay));
+                            delay *= 2;
+                        }
+                    }
+                }
+                return null;
+            })();
+
+            pendingFetches.set(text, fetchPromise);
+            try {
+                return await fetchPromise;
+            } finally {
+                pendingFetches.delete(text);
+            }
+        }
+
+        // تحميل مسبق للجمل في الخلفية لبدء القراءة فوراً دون أي انتظار
+        function preloadAllLessonAudio() {
+            const allTexts = [
+                "By the end of this lesson, students should have reviewed when to use the Present Progressive and the Simple Present.",
+                ...chartAllSentences,
+                ...comicAllSentences,
+                "We use the Simple Present to talk about routines and habits.",
+                "We use the Present Progressive to talk about things that are happening now.",
+                "We use to be plus verb plus ing to form the Present Progressive."
+            ];
+            // بدء التحميل المسبق على دفعات خفيفة
+            let index = 0;
+            async function loadNextBatch() {
+                if (index >= allTexts.length) return;
+                const url = await fetchTeacherVoiceUrl(allTexts[index]);
+                // إذا لم يتوفر مفتاح API، نكتفي بصوت المتصفح الفوري دون تأخير
+                if (!url) return;
+                index++;
+                setTimeout(loadNextBatch, 150);
+            }
+            loadNextBatch();
+        }
+
+        // اختيار أنقى وأهدأ صوت معلمة في المتصفح كنظام احتياطي فوري
+        function loadCalmTeacherVoice() {
+            if (!('speechSynthesis' in window)) return;
+            const voices = window.speechSynthesis.getVoices();
+            if (!voices || voices.length === 0) return;
+
+            const preferredNames = [
+                'Google US English',
+                'Microsoft Aria',
+                'Microsoft Jenny',
+                'Samantha',
+                'Victoria',
+                'Karen',
+                'Moira',
+                'Microsoft Zira',
+                'Female'
+            ];
+
+            for (const name of preferredNames) {
+                const found = voices.find(v => v.lang.startsWith('en') && v.name.includes(name));
+                if (found) {
+                    preferredFemaleVoice = found;
+                    return;
+                }
+            }
+
+            preferredFemaleVoice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+        }
+
+        if ('speechSynthesis' in window) {
+            loadCalmTeacherVoice();
+            window.speechSynthesis.onvoiceschanged = loadCalmTeacherVoice;
+        }
+
+        // تحديث واجهة حالة المعلمة في الشريط العلوي
+        function setSpeakingUI(isSpeaking, statusLabel = "المعلمة تقرأ الآن...") {
+            const pulse = document.getElementById('teacher-pulse');
+            const statusText = document.getElementById('teacher-status-text');
+            const stopBtn = document.getElementById('stop-audio-btn');
+
+            if (isSpeaking) {
+                if (pulse) pulse.classList.remove('hidden');
+                if (statusText) statusText.textContent = statusLabel;
+                if (stopBtn) stopBtn.classList.remove('hidden');
+            } else {
+                if (pulse) pulse.classList.add('hidden');
+                if (statusText) statusText.textContent = "المعلمة جاهزة للقراءة";
+                if (stopBtn) stopBtn.classList.add('hidden');
+            }
+        }
+
+        // إزالة التظليل عن جميع الجمل
+        function clearHighlights() {
+            document.querySelectorAll('.active-reading-box').forEach(el => {
+                el.classList.remove('active-reading-box');
+            });
+            document.querySelectorAll('.active-reading-text').forEach(el => {
+                el.classList.remove('active-reading-text');
+            });
+        }
+
+        // تظليل الجملة النشطة بالتزامن مع صوت المعلمة
+        function highlightSentence(text) {
+            clearHighlights();
+            if (!text) return;
+
+            const normalizedTarget = text.trim().replace(/\s+/g, ' ');
+            const speakElements = document.querySelectorAll('[data-speak]');
+
+            for (const el of speakElements) {
+                const attrText = (el.getAttribute('data-speak') || '').trim().replace(/\s+/g, ' ');
+                if (attrText === normalizedTarget) {
+                    if (el.classList.contains('sentence-box')) {
+                        el.classList.add('active-reading-box');
+                        const innerText = el.querySelector('.sentence-text');
+                        if (innerText) {
+                            innerText.classList.add('active-reading-text');
+                        }
+                    } else {
+                        el.classList.add('active-reading-text');
+                    }
+                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    break;
+                }
+            }
+        }
+
+        // النطق الاحتياطي عبر المتصفح بصوت معلمة هادئ وواضح
+        function speakWithBrowserFallback(text, signal = null) {
+            return new Promise((resolve) => {
+                if (!('speechSynthesis' in window)) {
+                    resolve();
+                    return;
+                }
+
+                try {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    if (!preferredFemaleVoice) loadCalmTeacherVoice();
+                    if (preferredFemaleVoice) {
+                        utterance.voice = preferredFemaleVoice;
+                    }
+                    utterance.lang = 'en-US';
+                    utterance.rate = 0.88;  // سرعة هادئة ومريحة للأطفال دون تباطؤ ممل
+                    utterance.pitch = 1.06; // نبرة أنثوية دافئة وواضحة
+
+                    let settled = false;
+                    const finish = () => {
+                        if (!settled) {
+                            settled = true;
+                            resolve();
+                        }
+                    };
+
+                    utterance.onend = finish;
+                    utterance.onerror = finish;
+
+                    if (signal) {
+                        signal.addEventListener('abort', () => {
+                            window.speechSynthesis.cancel();
+                            finish();
+                        }, { once: true });
+                    }
+
+                    window.speechSynthesis.speak(utterance);
+                } catch (e) {
+                    resolve();
+                }
+            });
+        }
+
+        // إيقاف الصوت والتظليل فوراً
+        function stopAudio() {
+            isSequencePlaying = false;
+            if (currentAbortController) {
+                currentAbortController.abort();
+                currentAbortController = null;
+            }
+            if (currentAudioElement) {
+                try {
+                    currentAudioElement.pause();
+                    currentAudioElement.currentTime = 0;
+                } catch (e) {}
+                currentAudioElement = null;
+            }
+            if ('speechSynthesis' in window) {
+                try {
+                    window.speechSynthesis.cancel();
+                } catch (e) {}
+            }
+            clearHighlights();
+            setSpeakingUI(false);
+        }
+
+        // قراءة جملة واحدة مع التظليل المتزامن
+        async function speakText(text, btnElement = null, keepSequenceState = false) {
+            if (!keepSequenceState) {
+                stopAudio();
+                currentAbortController = new AbortController();
+            }
+
+            const signal = currentAbortController ? currentAbortController.signal : null;
+            highlightSentence(text);
+            setSpeakingUI(true, "المعلمة تقرأ الجملة...");
+
+            try {
+                const audioUrl = await fetchTeacherVoiceUrl(text, signal);
+                if (signal && signal.aborted) return;
+
+                if (audioUrl) {
+                    await new Promise((resolve) => {
+                        const audio = new Audio(audioUrl);
+                        currentAudioElement = audio;
+                        let done = false;
+                        const finish = () => {
+                            if (!done) {
+                                done = true;
+                                currentAudioElement = null;
+                                resolve();
+                            }
+                        };
+                        audio.onended = finish;
+                        audio.onerror = finish;
+                        if (signal) {
+                            signal.addEventListener('abort', () => {
+                                audio.pause();
+                                finish();
+                            }, { once: true });
+                        }
+                        audio.play().catch(finish);
+                    });
+                } else {
+                    await speakWithBrowserFallback(text, signal);
+                }
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    await speakWithBrowserFallback(text, signal);
+                }
+            } finally {
+                if (!keepSequenceState && (!signal || !signal.aborted)) {
+                    clearHighlights();
+                    setSpeakingUI(false);
+                }
+            }
+        }
+
+        // قراءة مجموعة جمل متتالية مع التظليل التلقائي لكل جملة
+        async function speakSequence(sentences, btnElement = null) {
+            stopAudio();
+            isSequencePlaying = true;
+            currentAbortController = new AbortController();
+            const signal = currentAbortController.signal;
+
+            try {
+                for (let i = 0; i < sentences.length; i++) {
+                    if (!isSequencePlaying || signal.aborted) break;
+
+                    // تجهيز الجملة التالية مسبقاً لانتقال فوري دون تأخير
+                    if (i + 1 < sentences.length) {
+                        fetchTeacherVoiceUrl(sentences[i + 1], signal).catch(() => {});
+                    }
+
+                    await speakText(sentences[i], null, true);
+
+                    if (!isSequencePlaying || signal.aborted) break;
+                    if (i < sentences.length - 1) {
+                        await new Promise(res => setTimeout(res, 220));
+                    }
+                }
+            } finally {
+                if (!signal.aborted) {
+                    isSequencePlaying = false;
+                    clearHighlights();
+                    setSpeakingUI(false);
+                }
+            }
+        }
+
+        // ==========================================
+        // أدوات التفاعل للتمرين الثاني (التسطير والدائرة)
+        // ==========================================
+        let currentTool = 'underline';
+
+        function setTool(tool) {
+            currentTool = tool;
+            const underlineBtn = document.getElementById('tool-underline');
+            const circleBtn = document.getElementById('tool-circle');
+
+            if (tool === 'underline') {
+                underlineBtn.className = "px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-emerald-600 text-white shadow transition";
+                circleBtn.className = "px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-blue-50 transition";
+            } else {
+                circleBtn.className = "px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-blue-600 text-white shadow transition";
+                underlineBtn.className = "px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-emerald-50 transition";
+            }
+        }
+
+        function toggleWord(chip) {
+            chip.classList.remove('ring-2', 'ring-rose-500', 'ring-emerald-500', 'shake');
+
+            if (currentTool === 'underline') {
+                chip.classList.remove('marked-circle');
+                chip.classList.toggle('marked-underline');
+            } else {
+                chip.classList.remove('marked-underline');
+                chip.classList.toggle('marked-circle');
+            }
+        }
+
+        function checkComicAnswers() {
+            const chips = document.querySelectorAll('.word-chip');
+            let correctCount = 0;
+
+            chips.forEach(chip => {
+                const expected = chip.getAttribute('data-expected');
+                const hasUnderline = chip.classList.contains('marked-underline');
+                const hasCircle = chip.classList.contains('marked-circle');
+
+                chip.classList.remove('ring-2', 'ring-rose-500', 'ring-emerald-500', 'shake');
+
+                if ((expected === 'underline' && hasUnderline) || (expected === 'circle' && hasCircle)) {
+                    correctCount++;
+                    chip.classList.add('ring-2', 'ring-emerald-500');
+                } else {
+                    chip.classList.add('ring-2', 'ring-rose-500', 'shake');
+                }
+            });
+
+            if (correctCount === chips.length) {
+                showToast(`رائع يا بطل! جميع إجاباتك (${correctCount}/${chips.length}) صحيحة 100%!`);
+            } else {
+                showToast(`أحسنت! أجبت على ${correctCount} من ${chips.length}. أكمل الكلمات المحددة بالأحمر!`);
+            }
+        }
+
+        function resetComicAnswers() {
+            document.querySelectorAll('.word-chip').forEach(chip => {
+                chip.classList.remove('marked-underline', 'marked-circle', 'ring-2', 'ring-rose-500', 'ring-emerald-500', 'shake');
+            });
+            showToast("تم مسح التحديد، يمكنك المحاولة من جديد!");
+        }
+
+        // ==========================================
+        // التحقق من إجابات التمرين الثالث (الاختيار من متعدد)
+        // ==========================================
+        const quizAnswers = {
+            1: {
+                correct: 'Simple Present',
+                sentence: 'We use the Simple Present to talk about routines and habits.'
+            },
+            2: {
+                correct: 'Present Progressive',
+                sentence: 'We use the Present Progressive to talk about things that are happening now.'
+            },
+            3: {
+                correct: 'Present Progressive',
+                sentence: 'We use to be plus verb plus ing to form the Present Progressive.'
+            }
+        };
+
+        function checkQuiz(qNum, selected, btn) {
+            const buttons = document.querySelectorAll(`.quiz-btn-${qNum}`);
+            const feedback = document.getElementById(`quiz-feedback-${qNum}`);
+            const rule = quizAnswers[qNum];
+
+            buttons.forEach(b => {
+                b.className = `quiz-btn-${qNum} px-3 py-1 rounded-xl border-2 border-sky-300 bg-white text-sky-700 font-bold hover:bg-sky-50 transition`;
+            });
+
+            if (selected === rule.correct) {
+                btn.className = `quiz-btn-${qNum} px-3 py-1 rounded-xl border-2 border-emerald-600 bg-emerald-500 text-white font-bold shadow-md transition`;
+                feedback.innerHTML = `<span class="text-emerald-600 flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> أحسنت! إجابة صحيحة</span>`;
+                showToast("ممتاز يا بطل! إجابة صحيحة!");
+                speakText(rule.sentence);
+            } else {
+                btn.className = `quiz-btn-${qNum} px-3 py-1 rounded-xl border-2 border-rose-400 bg-rose-100 text-rose-700 font-bold shake transition`;
+                feedback.innerHTML = `<span class="text-rose-600 flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> حاول مرة أخرى</span>`;
+                showToast("فكّر جيداً وحاول مرة أخرى يا بطل!");
+            }
+        }
+
+        // إظهار رسالة تشجيعية لطيفة أسفل الشاشة
+        let toastTimer = null;
+        function showToast(message) {
+            const toast = document.getElementById('toast-message');
+            const toastText = document.getElementById('toast-text');
+            if (!toast || !toastText) return;
+
+            toastText.textContent = message;
+            toast.classList.remove('hidden');
+
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+
+        // تهيئة الدرس عند اكتمال تحميل الصفحة
+        window.onload = function () {
+            loadCalmTeacherVoice();
+            preloadAllLessonAudio();
+        };
+    </script>
+</body>
+</html>
